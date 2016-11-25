@@ -1,5 +1,7 @@
 import chess
 import sys
+import evaluator
+from random import randint
 
 def getLegalMoves(board):
     captureMoves = list()
@@ -19,28 +21,51 @@ def getLegalMoves(board):
 def weMove(board):
     legalMoves = getLegalMoves(board)
 
-    board.push(legalMoves[0])
+    board.push(legalMoves[randint(0,len(legalMoves)-1)])
 
 def otherPlayerMoves(board):
-    move = raw_input() # assume input is valid
+    move = raw_input()
+
+    # If input is blank, just pick a random move
+    if (move == ""):
+        weMove(board)
+        return
+
     move = chess.Move.from_uci(move)
 
-    assert move in board.legal_moves
+    if (not(move in board.legal_moves)):
+        print "Invalid move"
+        otherPlayerMoves(board)
+        return
 
     board.push(move)
 
+def printBoard(board):
+    print("###############")
+    print(board)
+
 def main(argv):
-    color = argv[1] # 'black' or 'white'
+    color = 0
+
+    if (argv[1] == "black"):
+        color = chess.BLACK
+    else:
+        color = chess.WHITE
 
     board = chess.Board()
 
-    if (color == "black"): # other player goes first
+    printBoard(board)
+
+    if (color == chess.BLACK): # other player goes first
         otherPlayerMoves(board)
 
     while (not(board.is_game_over())):
+        printBoard(board)
+
         weMove(board)
 
-        print(board)
+        printBoard(board)
+        print(evaluator.evaluate(board, chess.BLACK))
 
         otherPlayerMoves(board)
 
