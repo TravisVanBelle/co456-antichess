@@ -3,24 +3,27 @@ import sys
 import evaluator
 from random import randint
 from helpers import *
+from tree import *
 
-def aiMove(board):
-    legalMoves = getLegalMoves(board)
-    board.push(legalMoves[randint(0,len(legalMoves)-1)])
+def aiMove(board, moveTree):
+    bestMove = moveTree.evaluateTree()
+    board.push(bestMove)
+
+    moveTree.chooseMove(bestMove)
 
 def randomMove(board):
     legalMoves = getLegalMoves(board)
-    board.push(legalMoves[randint(0,len(legalMoves)-1)])
+    return legalMoves[randint(0, len(legalMoves)-1)]
 
-def inputMove(board):
+def inputMove(board, moveTree = False):
+    print 'Input move:'
     move = raw_input()
 
     # If input is blank, just pick a random move
     if (move == ""):
-        randomMove(board)
-        return
-
-    move = chess.Move.from_uci(move)
+        move = randomMove(board)
+    else:
+        move = chess.Move.from_uci(move)
 
     if (not(move in board.legal_moves)):
         print "Invalid move"
@@ -28,6 +31,10 @@ def inputMove(board):
         return
 
     board.push(move)
+
+    if (moveTree):
+        moveTree.chooseMove(move)
+        moveTree.findNewChildren()
 
 def printBoard(board):
     print("###############")
@@ -43,20 +50,21 @@ def main(argv):
 
     board = chess.Board()
 
-    printBoard(board)
-
-    if (color == chess.BLACK): # other player goes first
+    # Other player goes first
+    if (color == chess.BLACK):
+        printBoard(board)
         inputMove(board)
+
+    moveTree = MoveTree(board)
 
     while (not(board.is_game_over())):
         printBoard(board)
-        print(evaluator.evaluate(board, chess.BLACK))
-
-        aiMove(board)
+        aiMove(board, moveTree)
 
         printBoard(board)
+        inputMove(board, moveTree)
 
-        inputMove(board)
+
 
 
 main(sys.argv)

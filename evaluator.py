@@ -209,7 +209,6 @@ def evaluate(board, color):
     rk = kingProtectionEvaluation(board, color)
     pt = pawnTrapEvaluation(board, color)
     cp = captureMoveEvaluation(board)
-    print board.turn
 
     return {
         'material': m,
