@@ -11,6 +11,20 @@ surroundingSquaresMap = {
     'rd': -1
 }
 
+def log(string):
+    print string
+
+def getPieceCount(board):
+    value = 0
+
+    for square in chess.SQUARES:
+        piece = board.piece_at(square)
+
+        if (piece):
+            value += 1
+
+    return value
+
 def getEndgameValue():
     return 1000000
 

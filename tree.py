@@ -2,9 +2,6 @@ import chess
 from helpers import *
 import evaluator
 
-# We will only look this many moves ahead of the current board
-# Must be multiple of 2
-maxDepth = 4
 
 # The tree that keeps track of moves
 # Allocate starting with the board when its our player's turn
@@ -13,6 +10,10 @@ class MoveTree:
         self.rootDepth = 0
         self.root = MoveNode(board, None, None, self, 0)
         self.color = board.turn
+
+        # We will only look this many moves ahead of the current board
+        # Must be multiple of 2
+        self.maxDepth = 2
 
         self.root.findChildren()
 
@@ -67,7 +68,7 @@ class MoveNode:
 
     def findNewChildren(self):
         # We reached the leaves, no more children
-        if (self.tree.rootDepth + maxDepth <= self.depth):
+        if (self.tree.rootDepth + self.tree.maxDepth <= self.depth):
             return
 
         # The current node hasn't found any children, so it must have been just
@@ -83,7 +84,7 @@ class MoveNode:
     def findChildren(self):
         # If our depth is maxDepth levels deeper than the root, we stop looking
         # at children.
-        if (self.tree.rootDepth + maxDepth <= self.depth):
+        if (self.tree.rootDepth + self.tree.maxDepth <= self.depth):
             return
 
         # Get all the legal moves

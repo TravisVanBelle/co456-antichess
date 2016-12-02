@@ -70,8 +70,12 @@ def singleKingProtectionEvaluation(board, color):
 
     # Get map of squares surrounding the King
     surroundingSquares = getSurroundingSquares(kingPosition)
+
     for key in surroundingSquares:
         square = surroundingSquares[key]
+
+        if (square == -1):
+            continue
 
         piece = board.piece_at(square)
         if (piece and piece.color == color):
@@ -87,25 +91,6 @@ def singleKingProtectionEvaluation(board, color):
             value -= 0.5
         elif (kingPosition in evenSquares and bishop[0] in evenSquares):
             value -= 0.5
-
-    return value
-
-def captureMoveEvaluation(board):
-    return singleCaptureMoveEvaluation(board)
-
-def singleCaptureMoveEvaluation(board):
-    legalMoves = getLegalMoves(board)
-    value = 0
-
-    if (len(legalMoves) == 0 or not(board.is_capture(legalMoves[0]))):
-        return 0
-
-    for move in legalMoves:
-        moving = board.piece_at(move.from_square)
-        capturing = board.piece_at(move.to_square)
-
-        if (hasattr(capturing, 'piece_type')):
-            value = max(value, valueMap[capturing.piece_type])
 
     return value
 
@@ -204,13 +189,12 @@ def getEvaluation(board, color):
     m = materialEvaluation(board, color)
     rk = kingProtectionEvaluation(board, color)
     pt = pawnTrapEvaluation(board, color)
-    cp = captureMoveEvaluation(board)
+
 
     return {
         'material': m,
         'king': rk,
         'pawn trap': pt,
-        'captures': cp
     }
 
 # evaluate: Returns the numerical utility value for a given board and color
@@ -224,4 +208,4 @@ def evaluate(board, color):
     evaluation = getEvaluation(board, color)
 
     # Return the utility value for this board
-    return evaluation['material']*1000 + evaluation['king']*10;
+    return evaluation['material']*1000 + evaluation['king']*10 + evaluation['pawn trap']*5;
