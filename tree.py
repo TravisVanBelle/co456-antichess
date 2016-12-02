@@ -4,7 +4,7 @@ import evaluator
 
 # We will only look this many moves ahead of the current board
 # Must be multiple of 2
-maxDepth = 2
+maxDepth = 4
 
 # The tree that keeps track of moves
 # Allocate starting with the board when its our player's turn
@@ -93,7 +93,7 @@ class MoveNode:
 
         # Allocate new MoveNodes for each move, get their children too
         for move in legalMoves:
-            nextBoard = self.board.copy()
+            nextBoard = self.board.copy(False)
             nextBoard.push(move)
             child = MoveNode(nextBoard, move, self, self.tree, self.depth+1)
             child.findChildren()
