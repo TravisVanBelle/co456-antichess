@@ -4,7 +4,7 @@ import evaluator
 
 # We will only look this many moves ahead of the current board
 # Must be multiple of 2
-maxDepth = 4
+maxDepth = 2
 
 # The tree that keeps track of moves
 # Allocate starting with the board when its our player's turn
@@ -99,16 +99,23 @@ class MoveNode:
             child.findChildren()
             self.children.append(child)
 
+    # evaluate: Finds the value for a given node. Either finds the value of its
+    #    children and computes its value, or runs the static evaluator function.
     def evaluate(self):
-        if (self.depth%2 == 1):
-            # Opponent is moving. We don't evaluate yet.
-            return
-        # If no children and we our analyzing our own move, evaluate this board.
-        if ((self.children == None or len(self.children) == 0) and self.depth%2 == 0):
-            val = evaluator.evaluate(self.board, self.tree.color)['material']
-            self.value = val
+        # Odd depth means we moved to get to this board
+        # Even depth means opponent moved to get to this board
+
+        # If we're looking at their moves and there aren't any, it's an endgame
+        if (self.depth%2 == 1 and (self.children == None or len(self.children) == 0)):
+            self.value = getEndgameValue()
             return
 
+        # If no children and we our analyzing our own move, evaluate this board.
+        if (self.depth%2 == 0 and (self.children == None or len(self.children) == 0)):
+            self.value = evaluator.evaluate(self.board, self.tree.color)
+            return
+
+        # Get all the values of the children
         childrenValues = []
         for child in self.children:
             child.evaluate()
@@ -124,16 +131,10 @@ class MoveNode:
         if (self.depth%2 == 0):
             self.value = max(childrenValues)
 
-    def length(self, val):
-        if (val == None):
-            return 'None'
-        else:
-            return len(val)
-
+    # printNode: Prints the given node info and its children
     def printNode(self):
         if (self.move != None):
-            print('--' * self.depth + ' move:' + str(self.move)+ ' children:' + str(self.length(self.children)))
-
+            print('--' * (self.depth-self.tree.rootDepth+1) + ' move:' + str(self.move)+ ' depth:' + str(self.depth) + ' score:' + str(self.value))
         if (self.children == None):
             return
 

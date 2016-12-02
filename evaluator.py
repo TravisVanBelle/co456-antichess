@@ -48,7 +48,6 @@ def setPieceLists(board):
 
         boardPieces[piece.color].append((square, piece))
 
-#### RELATIVE POSITION EVALUATION ####
 # Calculates the overall King Protection for the given color
 def kingProtectionEvaluation(board, color):
     value1 = singleKingProtectionEvaluation(board,color)
@@ -98,15 +97,15 @@ def singleCaptureMoveEvaluation(board):
     legalMoves = getLegalMoves(board)
     value = 0
 
-    if (not(board.is_capture(legalMoves[0]))):
+    if (len(legalMoves) == 0 or not(board.is_capture(legalMoves[0]))):
         return 0
 
     for move in legalMoves:
         moving = board.piece_at(move.from_square)
         capturing = board.piece_at(move.to_square)
 
-
-        value = max(value, valueMap[capturing.piece_type])
+        if (hasattr(capturing, 'piece_type')):
+            value = max(value, valueMap[capturing.piece_type])
 
     return value
 
@@ -198,14 +197,11 @@ def materialEvaluation(board, color):
     else:
         return white['count'] - black['count']
 
-
-# board: A Board object
-# color: True=White, False=Black
-def evaluate(board, color):
+# getEvaluation: Returns the evaluation for a given board
+def getEvaluation(board, color):
     setPieceLists(board)
 
     m = materialEvaluation(board, color)
-
     rk = kingProtectionEvaluation(board, color)
     pt = pawnTrapEvaluation(board, color)
     cp = captureMoveEvaluation(board)
@@ -216,3 +212,16 @@ def evaluate(board, color):
         'pawn trap': pt,
         'captures': cp
     }
+
+# evaluate: Returns the numerical utility value for a given board and color
+#     Evaluates assuming its the given color's turn to move
+def evaluate(board, color):
+    # If the board is a checkmate, there are no moves, this player loses.
+    if (board.is_checkmate()):
+        return -getEndgameValue()
+
+    # Get the values for the given board
+    evaluation = getEvaluation(board, color)
+
+    # Return the utility value for this board
+    return evaluation['material']*1000 + evaluation['king']*10;

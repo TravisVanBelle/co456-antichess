@@ -4,9 +4,11 @@ import evaluator
 from random import randint
 from helpers import *
 from tree import *
+import time
 
 def aiMove(board, moveTree):
     bestMove = moveTree.evaluateTree()
+    print 'best move: ' + str(bestMove)
     board.push(bestMove)
 
     moveTree.chooseMove(bestMove)
@@ -57,12 +59,22 @@ def main(argv):
 
     moveTree = MoveTree(board)
 
-    while (not(board.is_game_over())):
+    while (True):
         printBoard(board)
         aiMove(board, moveTree)
 
+        if (board.is_game_over()):
+            print board.result()
+            print 'AI WON'
+            break
+
         printBoard(board)
         inputMove(board, moveTree)
+
+        if (board.is_game_over()):
+            print board.result()
+            print 'USER WON'
+            break
 
 
 

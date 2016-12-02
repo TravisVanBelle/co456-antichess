@@ -11,6 +11,9 @@ surroundingSquaresMap = {
     'rd': -1
 }
 
+def getEndgameValue():
+    return 1000000
+
 def getLegalMoves(board):
     captureMoves = list()
     legalMoves = list()
