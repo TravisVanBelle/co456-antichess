@@ -7,11 +7,14 @@ from tree import *
 import time
 
 def aiMove(board, moveTree):
+    start = time.time()
     bestMove = moveTree.evaluateTree()
+
     print 'best move: ' + str(bestMove)
     board.push(bestMove)
 
     moveTree.chooseMove(bestMove)
+    print 'time deciding: ' + str(time.time() - start)
 
 def randomMove(board):
     legalMoves = getLegalMoves(board)

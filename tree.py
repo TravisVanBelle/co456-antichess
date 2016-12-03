@@ -1,5 +1,6 @@
 import chess
 from helpers import *
+from random import randint
 import evaluator
 
 
@@ -23,17 +24,39 @@ class MoveTree:
     def evaluateTree(self):
         self.root.evaluate()
 
+        countMax = 0
         m = -float("inf")
         index = 0
         for key,child in enumerate(self.root.children):
             if (child.value > m):
+                countMax = 1
                 m = child.value
                 index = key
+            elif (child.value == m):
+                countMax += 1
 
-        return self.root.children[index].move
+        if (countMax == 1):
+            return self.root.children[index].move
+        else:
+            select = randint(1, countMax)
+            for key,child in enumerate(self.root.children):
+                if (child.value != m):
+                    continue
+                if (select == 1):
+                    print child.move
+                    return child.move
+                else:
+                    select -= 1
+
+        print self.root.children[index].move
+
 
     # Chooses the move, updates tree root to that MoveNode
     def chooseMove(self, move):
+        if (self.maxDepth != 4 and getPieceCount(self.root.board) <= 13):
+            self.maxDepth = 4
+            self.findNewChildren()
+
         for child in self.root.children:
             if (child.move == move):
                 self.rootDepth += 1

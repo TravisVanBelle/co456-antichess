@@ -208,4 +208,4 @@ def evaluate(board, color):
     evaluation = getEvaluation(board, color)
 
     # Return the utility value for this board
-    return evaluation['material']*1000 + evaluation['king']*10 + evaluation['pawn trap']*5;
+    return evaluation['material']*1000 + evaluation['pawn trap']*5;
