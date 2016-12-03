@@ -8,11 +8,12 @@ import time
 
 def aiMove(board):
     moveTree = MoveTree(board)
-    #moveTree.getTree()
+    #moveTree.printTree()
     bestMove = moveTree.getBestMove()
 
-    print 'best move: ' + str(bestMove)
-    board.push(bestMove)
+    print 'best move: ' + str(bestMove[0])
+    print 'best value: ' + str(bestMove[1])
+    board.push(bestMove[0])
 
 def randomMove(board):
     legalMoves = getLegalMoves(board)

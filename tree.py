@@ -36,15 +36,14 @@ class MoveTree:
                 countMax += 1
 
         if (countMax == 1):
-            return self.root.children[index].move
+            return (self.root.children[index].move, self.root.children[index].value)
         else:
             select = randint(1, countMax)
             for key,child in enumerate(self.root.children):
                 if (child.value != m):
                     continue
                 if (select == 1):
-                    print child.move
-                    return child.move
+                    return (child.move, child.value)
                 else:
                     select -= 1
 
@@ -80,13 +79,14 @@ class MoveNode:
         # Depth is odd, at a min node
         if (self.depth%2 == 1):
             legalMoves = getLegalMoves(self.board)
+
             self.children = []
+
+            m = float("inf")
 
             if (len(legalMoves) == 0):
                 self.value = getEndgameValue()
                 return
-
-            m = float("inf")
 
             for move in legalMoves:
                 nextBoard = self.board.copy(False)
@@ -103,21 +103,21 @@ class MoveNode:
                 self.children.append(child)
 
                 if (beta <= alpha):
-                    self.value = m
+                    self.value = m-1
                     return
 
-            self.value = m
+            self.value = m-1
 
         # Depth is even, at a max node
         if (self.depth%2 == 0):
             legalMoves = getLegalMoves(self.board)
             self.children = []
 
+            m = -float("inf")
+
             if (len(legalMoves) == 0):
                 self.value = -getEndgameValue()
                 return
-
-            m = -float("inf")
 
             for move in legalMoves:
                 nextBoard = self.board.copy(False)
@@ -134,10 +134,10 @@ class MoveNode:
                 self.children.append(child)
 
                 if (beta <= alpha):
-                    self.value = m
+                    self.value = m-1
                     return
 
-            self.value = m
+            self.value = m-1
 
     def findNewChildren(self):
         # We reached the leaves, no more children
