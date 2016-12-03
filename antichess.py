@@ -6,21 +6,19 @@ from helpers import *
 from tree import *
 import time
 
-def aiMove(board, moveTree):
-    start = time.time()
-    bestMove = moveTree.evaluateTree()
+def aiMove(board):
+    moveTree = MoveTree(board)
+    #moveTree.getTree()
+    bestMove = moveTree.getBestMove()
 
     print 'best move: ' + str(bestMove)
     board.push(bestMove)
-
-    moveTree.chooseMove(bestMove)
-    print 'time deciding: ' + str(time.time() - start)
 
 def randomMove(board):
     legalMoves = getLegalMoves(board)
     return legalMoves[randint(0, len(legalMoves)-1)]
 
-def inputMove(board, moveTree = False):
+def inputMove(board):
     print 'Input move:'
     move = raw_input()
 
@@ -36,10 +34,6 @@ def inputMove(board, moveTree = False):
         return
 
     board.push(move)
-
-    if (moveTree):
-        moveTree.chooseMove(move)
-        moveTree.findNewChildren()
 
 def printBoard(board):
     print("###############")
@@ -60,11 +54,9 @@ def main(argv):
         printBoard(board)
         inputMove(board)
 
-    moveTree = MoveTree(board)
-
     while (True):
         printBoard(board)
-        aiMove(board, moveTree)
+        aiMove(board)
 
         if (board.is_game_over()):
             print board.result()
@@ -72,7 +64,7 @@ def main(argv):
             break
 
         printBoard(board)
-        inputMove(board, moveTree)
+        inputMove(board)
 
         if (board.is_game_over()):
             print board.result()

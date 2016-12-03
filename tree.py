@@ -14,16 +14,16 @@ class MoveTree:
 
         # We will only look this many moves ahead of the current board
         # Must be multiple of 2
-        self.maxDepth = 2
+        self.maxDepth = 4
 
-        self.root.findChildren()
+        # Gets the tree
+        self.getTree()
 
-    # Returns:
-    # 0: The best move
-    # 1: The index into children array where best move is found
-    def evaluateTree(self):
-        self.root.evaluate()
+    def getTree(self):
+        self.root.getTree(-float("inf"), float("inf"))
 
+    # Returns the best move
+    def getBestMove(self):
         countMax = 0
         m = -float("inf")
         index = 0
@@ -48,27 +48,7 @@ class MoveTree:
                 else:
                     select -= 1
 
-        print self.root.children[index].move
-
-
-    # Chooses the move, updates tree root to that MoveNode
-    def chooseMove(self, move):
-        if (self.maxDepth != 4 and getPieceCount(self.root.board) <= 13):
-            self.maxDepth = 4
-            self.findNewChildren()
-
-        for child in self.root.children:
-            if (child.move == move):
-                self.rootDepth += 1
-                self.root = child
-                return
-
-        print "Error: Move not found"
-        quit()
-
-    # Finds the next layer(s) of children
-    def findNewChildren(self):
-        self.root.findNewChildren()
+        return self.root.children[index].move
 
     # Displays the tree
     def printTree(self):
@@ -89,6 +69,76 @@ class MoveNode:
         self.depth = depth
         self.value = None
 
+    # Gets the tree and evaluation. Prunes on the way.
+    # Returns tuple (alpha, beta), numbers or None.
+    def getTree(self, alpha, beta):
+        # We reached max depth of the tree
+        if (self.tree.rootDepth + self.tree.maxDepth <= self.depth):
+            self.value = evaluator.evaluate(self.board, self.tree.color)
+            return
+
+        # Depth is odd, at a min node
+        if (self.depth%2 == 1):
+            legalMoves = getLegalMoves(self.board)
+            self.children = []
+
+            if (len(legalMoves) == 0):
+                self.value = getEndgameValue()
+                return
+
+            m = float("inf")
+
+            for move in legalMoves:
+                nextBoard = self.board.copy(False)
+                nextBoard.push(move)
+                child = MoveNode(nextBoard, move, self, self.tree, self.depth+1)
+                child.getTree(alpha, beta)
+
+                if (child.value < beta):
+                    beta = child.value
+
+                if (child.value < m):
+                    m = child.value
+
+                self.children.append(child)
+
+                if (beta <= alpha):
+                    self.value = m
+                    return
+
+            self.value = m
+
+        # Depth is even, at a max node
+        if (self.depth%2 == 0):
+            legalMoves = getLegalMoves(self.board)
+            self.children = []
+
+            if (len(legalMoves) == 0):
+                self.value = -getEndgameValue()
+                return
+
+            m = -float("inf")
+
+            for move in legalMoves:
+                nextBoard = self.board.copy(False)
+                nextBoard.push(move)
+                child = MoveNode(nextBoard, move, self, self.tree, self.depth+1)
+                child.getTree(alpha, beta)
+
+                if (child.value > alpha):
+                    alpha = child.value
+
+                if (child.value > m):
+                    m = child.value
+
+                self.children.append(child)
+
+                if (beta <= alpha):
+                    self.value = m
+                    return
+
+            self.value = m
+
     def findNewChildren(self):
         # We reached the leaves, no more children
         if (self.tree.rootDepth + self.tree.maxDepth <= self.depth):
@@ -103,57 +153,6 @@ class MoveNode:
         else:
             for children in self.children:
                 children.findNewChildren()
-
-    def findChildren(self):
-        # If our depth is maxDepth levels deeper than the root, we stop looking
-        # at children.
-        if (self.tree.rootDepth + self.tree.maxDepth <= self.depth):
-            return
-
-        # Get all the legal moves
-        legalMoves = getLegalMoves(self.board)
-
-        self.children = []
-
-        # Allocate new MoveNodes for each move, get their children too
-        for move in legalMoves:
-            nextBoard = self.board.copy(False)
-            nextBoard.push(move)
-            child = MoveNode(nextBoard, move, self, self.tree, self.depth+1)
-            child.findChildren()
-            self.children.append(child)
-
-    # evaluate: Finds the value for a given node. Either finds the value of its
-    #    children and computes its value, or runs the static evaluator function.
-    def evaluate(self):
-        # Odd depth means we moved to get to this board
-        # Even depth means opponent moved to get to this board
-
-        # If we're looking at their moves and there aren't any, it's an endgame
-        if (self.depth%2 == 1 and (self.children == None or len(self.children) == 0)):
-            self.value = getEndgameValue()
-            return
-
-        # If no children and we our analyzing our own move, evaluate this board.
-        if (self.depth%2 == 0 and (self.children == None or len(self.children) == 0)):
-            self.value = evaluator.evaluate(self.board, self.tree.color)
-            return
-
-        # Get all the values of the children
-        childrenValues = []
-        for child in self.children:
-            child.evaluate()
-            childrenValues.append(child.value)
-
-        # If depth is odd, then we're on the opponents board.
-        # Find the min value.
-        if (self.depth%2 == 1):
-            self.value = min(childrenValues)
-
-        # If depth is even, then we're on our own board.
-        # Find the max value.
-        if (self.depth%2 == 0):
-            self.value = max(childrenValues)
 
     # printNode: Prints the given node info and its children
     def printNode(self):
