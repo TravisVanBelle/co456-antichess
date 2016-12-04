@@ -48,14 +48,26 @@ def setPieceLists(board):
 
         boardPieces[piece.color].append((square, piece))
 
-# Calculates the overall King Protection for the given color
+#### MATERIAL POSITION EVALUATION ####
+def materialPositionEvaluation(board, color):
+    value1 = 0
+    value2 = 0
+
+    for piece in boardPieces[color]:
+        value1 += getPositionValue(piece[1].piece_type, piece[0], color)
+
+    for piece in boardPieces[not(color)]:
+        value2 += getPositionValue(piece[1].piece_type, piece[0], not(color))
+
+    return value1 - value2
+
+#### KING PROTECTION EVALUATION ####
 def kingProtectionEvaluation(board, color):
     value1 = singleKingProtectionEvaluation(board,color)
     value2 = singleKingProtectionEvaluation(board,not(color))
 
     return value1 - value2
 
-# Calculates the single King Protection value for the given color
 def singleKingProtectionEvaluation(board, color):
     kingPosition = 0
     value = 0
@@ -94,6 +106,7 @@ def singleKingProtectionEvaluation(board, color):
 
     return value
 
+#### PAWN TRAP EVALUATION ####
 def pawnTrapEvaluation(board, color):
     value1 = singlePawnTrapEvaluation(board, color)
     value2 = singlePawnTrapEvaluation(board, not(color))
@@ -189,12 +202,13 @@ def getEvaluation(board, color):
     m = materialEvaluation(board, color)
     rk = kingProtectionEvaluation(board, color)
     pt = pawnTrapEvaluation(board, color)
-
+    mp = materialPositionEvaluation(board, color)
 
     return {
         'material': m,
         'king': rk,
         'pawn trap': pt,
+        'materialposition': mp
     }
 
 # evaluate: Returns the numerical utility value for a given board and color
@@ -208,4 +222,4 @@ def evaluate(board, color):
     evaluation = getEvaluation(board, color)
 
     # Return the utility value for this board
-    return evaluation['material']*1000 + evaluation['pawn trap']*5;
+    return evaluation['material']*10000 + evaluation['materialposition']*100 + evaluation['pawn trap']*5;

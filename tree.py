@@ -24,30 +24,22 @@ class MoveTree:
 
     # Returns the best move
     def getBestMove(self):
-        countMax = 0
+        maxMoves = []
         m = -float("inf")
+
         index = 0
         for key,child in enumerate(self.root.children):
             if (child.value > m):
-                countMax = 1
+                maxMoves = [child]
                 m = child.value
                 index = key
             elif (child.value == m):
-                countMax += 1
+                maxMoves.append(child)
 
-        if (countMax == 1):
-            return (self.root.children[index].move, self.root.children[index].value)
-        else:
-            select = randint(1, countMax)
-            for key,child in enumerate(self.root.children):
-                if (child.value != m):
-                    continue
-                if (select == 1):
-                    return (child.move, child.value)
-                else:
-                    select -= 1
+        select = randint(0, len(maxMoves)-1)
 
-        return self.root.children[index].move
+        return (maxMoves[select].move, maxMoves[select].value)
+
 
     # Displays the tree
     def printTree(self):

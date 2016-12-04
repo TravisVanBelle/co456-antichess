@@ -29,7 +29,7 @@ def inputMove(board):
     else:
         move = chess.Move.from_uci(move)
 
-    if (not(move in board.legal_moves)):
+    if (not(move in getLegalMoves(board))):
         print "Invalid move"
         inputMove(board)
         return
