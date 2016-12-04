@@ -77,12 +77,14 @@ positionValues = {
 def log(string):
     print string
 
+# Returns the value for a given piece type at the given square for the color
 def getPositionValue(pieceType, squareNumber, color):
     if (color == chess.WHITE):
         return positionValues[pieceType][63-squareNumber]
     else:
         return positionValues[pieceType][squareNumber]
 
+# Returns the number of pieces on a board
 def getPieceCount(board):
     value = 0
 
@@ -94,9 +96,11 @@ def getPieceCount(board):
 
     return value
 
+# Endgames have value +- this constant
 def getEndgameValue():
-    return 1000000
+    return 10000000
 
+# Returns a list of legal moves for a given board.
 def getLegalMoves(board):
     captureMoves = list()
     legalMoves = list()

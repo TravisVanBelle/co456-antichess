@@ -3,7 +3,6 @@ from helpers import *
 from random import randint
 import evaluator
 
-
 # The tree that keeps track of moves
 # Allocate starting with the board when its our player's turn
 class MoveTree:
@@ -22,7 +21,7 @@ class MoveTree:
     def getTree(self):
         self.root.getTree(-float("inf"), float("inf"))
 
-    # Returns the best move
+    # Returns the best move. Call after getTree() has run.
     def getBestMove(self):
         maxMoves = []
         m = -float("inf")
@@ -40,8 +39,7 @@ class MoveTree:
 
         return (maxMoves[select].move, maxMoves[select].value)
 
-
-    # Displays the tree
+    # Displays the tree of moves.
     def printTree(self):
         self.root.printNode()
 
@@ -130,21 +128,6 @@ class MoveNode:
                     return
 
             self.value = m-1
-
-    def findNewChildren(self):
-        # We reached the leaves, no more children
-        if (self.tree.rootDepth + self.tree.maxDepth <= self.depth):
-            return
-
-        # The current node hasn't found any children, so it must have been just
-        # initialized.
-        if (self.children == None):
-            self.findChildren()
-        # Current node has children. Keep em, and find all the new children of
-        # the current node's children.
-        else:
-            for children in self.children:
-                children.findNewChildren()
 
     # printNode: Prints the given node info and its children
     def printNode(self):

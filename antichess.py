@@ -72,7 +72,4 @@ def main(argv):
             print 'USER WON'
             break
 
-
-
-
 main(sys.argv)

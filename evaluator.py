@@ -195,7 +195,7 @@ def materialEvaluation(board, color):
     else:
         return white['count'] - black['count']
 
-# getEvaluation: Returns the evaluation for a given board
+# Returns the complete evaluation for a given board
 def getEvaluation(board, color):
     setPieceLists(board)
 
@@ -211,8 +211,8 @@ def getEvaluation(board, color):
         'materialposition': mp
     }
 
-# evaluate: Returns the numerical utility value for a given board and color
-#     Evaluates assuming its the given color's turn to move
+# Returns the numerical utility value for a given board and color
+# Evaluates assuming its the given color's turn to move
 def evaluate(board, color):
     # If the board is a checkmate, there are no moves, this player loses.
     if (board.is_checkmate()):
