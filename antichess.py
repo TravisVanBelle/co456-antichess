@@ -11,8 +11,7 @@ def aiMove(board):
     #moveTree.printTree()
     bestMove = moveTree.getBestMove()
 
-    print 'best move: ' + str(bestMove[0])
-    print 'best value: ' + str(bestMove[1])
+    print str(bestMove[0])
     board.push(bestMove[0])
 
 def randomMove(board):
@@ -61,7 +60,6 @@ def main(argv):
 
         if (board.is_game_over()):
             print board.result()
-            print 'AI WON'
             break
 
         printBoard(board)
@@ -69,7 +67,6 @@ def main(argv):
 
         if (board.is_game_over()):
             print board.result()
-            print 'USER WON'
             break
 
 main(sys.argv)
