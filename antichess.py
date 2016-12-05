@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import chess
 import sys
 import evaluator
