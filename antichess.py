@@ -21,7 +21,7 @@ def randomMove(board):
     return legalMoves[randint(0, len(legalMoves)-1)]
 
 def inputMove(board):
-    print 'Input move:'
+    #print 'Input move:'
     move = raw_input()
 
     # If input is blank, just pick a random move
@@ -53,18 +53,18 @@ def main(argv):
 
     # Other player goes first
     if (color == chess.BLACK):
-        printBoard(board)
+        #printBoard(board)
         inputMove(board)
 
     while (True):
-        printBoard(board)
+        #printBoard(board)
         aiMove(board)
 
         if (board.is_game_over()):
             print board.result()
             break
 
-        printBoard(board)
+        #printBoard(board)
         inputMove(board)
 
         if (board.is_game_over()):
